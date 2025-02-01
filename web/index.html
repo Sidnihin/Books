@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека</title>
+</head>
+<body>
+<h1>Поиск в библиотеке</h1>
+
+<label>Найти авторов по названию книги:</label>
+<input type="text" id="bookTitle" placeholder="Введите название книги">
+<button onclick="searchAuthors()">Найти</button>
+
+<br><br>
+
+<label>Найти книги по имени автора:</label>
+<input type="text" id="authorName" placeholder="Введите имя автора">
+<button onclick="searchBooks()">Найти</button>
+
+<h2>Результаты:</h2>
+<div id="results"></div>
+
+<script src="scripts.js"></script>
+</body>
+</html>

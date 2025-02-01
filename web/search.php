@@ -1,37 +1,30 @@
 <?php
 header('Content-Type: application/json');
 
+require_once 'classes/Database.php';
+require_once 'classes/Authors.php';
+require_once 'classes/Books.php';
+
 try {
-    $conn = new PDO("pgsql:host=postgres_db;port=5432;dbname=library", "user", "password");
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new Database('postgres_db', '5432', 'library', 'user', 'password');
+    $conn = $db->getConnection();
+
+    $authors = new Authors($conn);
+    $books = new Books($conn);
 
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception("Метод не поддерживается");
     }
 
     if (!empty($_GET['book_title'])) {
-        $stmt = $conn->prepare("
-            SELECT a.name 
-            FROM authors a
-            JOIN author_book ab ON a.id = ab.author_id
-            JOIN books b ON b.id = ab.book_id
-            WHERE b.title ILIKE ?");
-        $stmt->execute(["%" . $_GET['book_title'] . "%"]);
-        $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(["authors" => $authors]);
+        $result = $authors->getAuthorsByBook($_GET['book_title']);
+        echo json_encode(["authors" => $result]);
         exit;
     }
 
     if (!empty($_GET['author_name'])) {
-        $stmt = $conn->prepare("
-            SELECT b.title
-            FROM books b
-            JOIN author_book ab ON b.id = ab.book_id
-            JOIN authors a ON a.id = ab.author_id
-            WHERE a.name ILIKE ?");
-        $stmt->execute(["%" . $_GET['author_name'] . "%"]);
-        $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(["books" => $books]);
+        $result = $books->getBooksByAuthor($_GET['author_name']);
+        echo json_encode(["books" => $result]);
         exit;
     }
 
